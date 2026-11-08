@@ -1,0 +1,17 @@
+name: 24시간 지난 사진 지우기
+on:
+  schedule:
+    - cron: '17 * * * *'   # 매시간 17분
+  workflow_dispatch: {}
+jobs:
+  cleanup:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - run: node scripts/cleanup.mjs
+        env:
+          SUPABASE_URL: ${{ vars.SUPABASE_URL }}
+          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
