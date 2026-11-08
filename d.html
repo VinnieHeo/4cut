@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>인생네컷 받기</title>
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f6f3ee;--card:#fff;--ink:#1d1b20;--mut:#7b7680;--acc:#ff4f8b;--line:#e8e2da}
+*{box-sizing:border-box}html,body{margin:0;background:var(--bg);color:var(--ink);font-family:'Noto Sans KR',system-ui,sans-serif;-webkit-text-size-adjust:100%}
+.wrap{max-width:560px;margin:0 auto;padding:22px 16px calc(40px + env(safe-area-inset-bottom))}
+header{text-align:center;margin:6px 0 18px}header img{height:44px;max-width:70%;object-fit:contain}header img[hidden]{display:none}
+header h1{font-size:24px;font-weight:900;margin:10px 0 2px;letter-spacing:-.02em}header p{margin:0;color:var(--mut);font-size:14px}
+.card{background:var(--card);border-radius:20px;padding:14px;margin:0 0 16px;box-shadow:0 6px 24px rgba(40,20,30,.07)}
+.card h2{font-size:17px;margin:2px 4px 10px;display:flex;align-items:center;gap:8px}.card h2 small{font-weight:500;color:var(--mut);font-size:13px}
+.media{width:100%;display:block;border-radius:12px;background:#eee}
+video.media{background:#111}
+.vwrap{position:relative;border-radius:12px;overflow:hidden;cursor:pointer}
+.vwrap .play{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;background:rgba(0,0,0,.35);color:#fff;font-weight:700;font-size:16px}
+.vwrap .play b{width:72px;height:72px;border-radius:50%;background:rgba(255,255,255,.92);color:#111;display:flex;align-items:center;justify-content:center;font-size:30px;padding-left:6px}
+.btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;margin-top:12px;padding:15px;border:0;border-radius:14px;background:var(--ink);color:#fff;font:700 16px 'Noto Sans KR',sans-serif;text-decoration:none;cursor:pointer}
+.btn.sub{background:#f1ece6;color:var(--ink)}.btn[disabled]{opacity:.5}
+.cuts{display:grid;grid-template-columns:1fr 1fr;gap:8px}.cuts img{width:100%;border-radius:10px;display:block;background:#eee}
+.note{color:var(--mut);font-size:13px;line-height:1.6;text-align:center;margin:8px 0 0}
+.wait{display:flex;align-items:center;gap:12px;color:var(--mut);font-size:15px;padding:18px 6px}
+.spin{width:22px;height:22px;border:3px solid #ddd;border-top-color:var(--acc);border-radius:50%;animation:sp 1s linear infinite;flex:none}@keyframes sp{to{transform:rotate(1turn)}}
+.err{text-align:center;padding:40px 10px;color:var(--mut);line-height:1.7}
+.tip{background:#fff6d9;border-radius:14px;padding:12px 14px;font-size:14px;line-height:1.6;margin:0 0 16px;color:#5a4a1a}
+</style></head>
+<body><div class="wrap">
+<header><img id="hLogo" alt="" hidden><h1 id="hTitle">인생네컷</h1><p id="hDate"></p></header>
+<div id="tip" class="tip" hidden></div>
+<main id="main"><div class="card"><div class="wait"><div class="spin"></div>사진을 불러오는 중이에요…</div></div></main>
+<p class="note">사진과 영상은 찍은 뒤 <b>24시간이 지나면 자동으로 삭제</b>돼요.<br>필요한 건 휴대폰에 꼭 저장해 두세요.</p>
+</div>
+<script>
+const BUCKET='photobooth';
+const $=id=>document.getElementById(id);
+const h=decodeURIComponent(location.hash.slice(1)||new URLSearchParams(location.search).get('i')||'');
+let ref='',id=h;if(h.includes('.')){[ref,id]=h.split('.')}
+const base=ref&&/^[a-z0-9]+$/.test(ref)?`https://${ref}.supabase.co`:'';
+const pub=p=>`${base}/storage/v1/object/public/${BUCKET}/${id}/${p}`;
+const ua=navigator.userAgent,inApp=/KAKAOTALK|NAVER|Instagram|FBAN|FBAV|Line\//i.test(ua);
+if(inApp){$('tip').hidden=false;$('tip').innerHTML='💡 저장이 잘 안 되면 오른쪽 위 메뉴에서 <b>다른 브라우저(Safari·Chrome)로 열기</b>를 눌러 주세요.'}
+const blobs={},inflight={};
+// 한 파일은 한 번만 받아서 화면 표시·저장에 같이 써요 (Supabase 트래픽 절약)
+function prefetch(p){return inflight[p]||(inflight[p]=(async()=>{try{const r=await fetch(pub(p));if(!r.ok)return null;blobs[p]=await r.blob();return blobs[p]}catch(e){return null}})().then(b=>{if(!b)delete inflight[p];return b}))}
+const objURL=b=>URL.createObjectURL(b);
+function showImg(im,p){prefetch(p).then(b=>{im.src=b?objURL(b):pub(p)})}
+async function save(p,name,btn){
+  const b=blobs[p];
+  if(b&&navigator.canShare){const f=new File([b],name,{type:b.type||(/mp4$/.test(name)?'video/mp4':'image/jpeg')});
+    if(navigator.canShare({files:[f]})){try{await navigator.share({files:[f]});return}catch(e){if(e.name==='AbortError')return}}}
+  const a=document.createElement('a');a.href=pub(p)+'?download='+encodeURIComponent(name);a.download=name;document.body.appendChild(a);a.click();a.remove()}
+function saveBtn(p,name,label,sub){const b=document.createElement('button');b.className='btn'+(sub?' sub':'');b.textContent=label;b.disabled=true;b.dataset.p=p;
+  b.onclick=()=>save(p,name,b);prefetch(p).then(()=>{b.disabled=false});return b}
+function card(title,small){const c=document.createElement('div');c.className='card';c.innerHTML=`<h2>${title}${small?` <small>${small}</small>`:''}</h2>`;return c}
+const isIOS=/iPhone|iPad|iPod/.test(ua)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
+const stamp=()=>new Date().toISOString().slice(0,10);
+let tries=0,shown=false;
+async function load(){
+  if(!id||!base){$('main').innerHTML='<div class="err">주소가 올바르지 않아요.<br>사진의 QR을 다시 찍어 주세요.</div>';return}
+  let man=null;try{const r=await fetch(pub('manifest.json')+'?t='+Date.now(),{cache:'no-store'});if(r.ok)man=await r.json()}catch(e){}
+  if(man){render(man);return}
+  // 아직 영상을 만드는 중: 사진만 먼저 보여 주기
+  let photoOk=false;try{const r=await fetch(pub('photo.jpg'),{method:'HEAD',cache:'no-store'});photoOk=r.ok}catch(e){}
+  if(photoOk&&!shown){render({files:{photo:'photo.jpg'}},true);shown=true}
+  if(!photoOk&&!shown)$('main').innerHTML=`<div class="card"><div class="wait"><div class="spin"></div>사진을 올리는 중이에요. 잠시만 기다려 주세요…</div></div>`;
+  if(++tries<40)setTimeout(load,8000);else if(!photoOk)$('main').innerHTML='<div class="err">아직 사진이 올라오지 않았어요.<br>잠시 후 이 페이지를 새로고침 해 주세요.</div>'}
+function render(man,partial){
+  if(man.logo){const L=$('hLogo');L.onload=()=>L.hidden=false;L.src=pub(man.logo)}
+  if(man.title)$('hTitle').textContent=man.title;if(man.date)$('hDate').textContent=man.date;document.title=(man.title||'인생네컷')+' 사진 받기';
+  const m=$('main');m.innerHTML='';const F=man.files||{},tag=`네컷_${id}`;
+  const hint=isIOS?'버튼을 누르고 “이미지 저장/비디오 저장”을 고르면 사진 앱에 들어가요':'';
+  if(F.photo){const c=card('📸 인생네컷','완성본');const im=document.createElement('img');im.className='media';showImg(im,F.photo);c.appendChild(im);c.appendChild(saveBtn(F.photo,`${tag}.jpg`,'사진 저장하기'));m.appendChild(c)}
+  if(partial){const c=document.createElement('div');c.className='card';c.innerHTML='<div class="wait"><div class="spin"></div>촬영 영상을 만드는 중이에요 (1~2분). 이 화면을 열어 두면 자동으로 나타나요.</div>';m.appendChild(c)}
+  // 영상 카드: 누를 때만 내려받아 재생 (트래픽 절약)
+  const vcard=(file,title,small,label)=>{const c=card(title,small);const ext=file.split('.').pop();
+    const w=document.createElement('div');w.className='vwrap';const v=document.createElement('video');v.className='media';v.muted=true;v.loop=true;v.playsInline=true;v.setAttribute('playsinline','');v.preload='none';
+    if(F.photo)prefetch(F.photo).then(b=>{if(b&&!v.src)v.poster=objURL(b)});
+    const ov=document.createElement('div');ov.className='play';ov.innerHTML='<b>▶</b>눌러서 영상 보기';w.append(v,ov);c.appendChild(w);
+    const b=document.createElement('button');b.className='btn';b.textContent='영상 불러오기';
+    let ready=false;const name=`${tag}_${label}.${ext}`;
+    async function open(){if(ready){v.paused?v.play():v.pause();return}ov.innerHTML='<div class="spin"></div>불러오는 중…';b.disabled=true;
+      const bl=await prefetch(file);b.disabled=false;
+      if(!bl){ov.innerHTML='<b>▶</b>다시 눌러 주세요';return}
+      ready=true;v.src=objURL(bl);ov.remove();v.play().catch(()=>{});b.textContent='영상 저장하기'}
+    w.onclick=open;b.onclick=()=>ready?save(file,name,b):open();c.appendChild(b);m.appendChild(c)};
+  if(F.timelapse)vcard(F.timelapse,'🎬 촬영 영상','처음부터 끝까지','촬영영상');
+  if(F.live)vcard(F.live,'🎞️ 움직이는 네컷','영상','영상');
+  if(F.cuts&&F.cuts.length){const c=card('🖼️ 원본 컷','프레임 없는 사진');const g=document.createElement('div');g.className='cuts';F.cuts.forEach(n=>{const im=document.createElement('img');showImg(im,n);g.appendChild(im)});c.appendChild(g);
+    const b=document.createElement('button');b.className='btn sub';b.textContent='원본 4장 저장하기';b.disabled=true;
+    Promise.all(F.cuts.map(prefetch)).then(()=>b.disabled=false);
+    b.onclick=async()=>{const fs=F.cuts.map((n,i)=>blobs[n]&&new File([blobs[n]],`${tag}_원본${i+1}.jpg`,{type:'image/jpeg'})).filter(Boolean);
+      if(fs.length&&navigator.canShare&&navigator.canShare({files:fs})){try{await navigator.share({files:fs});return}catch(e){if(e.name==='AbortError')return}}
+      for(let i=0;i<F.cuts.length;i++){await save(F.cuts[i],`${tag}_원본${i+1}.jpg`);await new Promise(r=>setTimeout(r,600))}};
+    c.appendChild(b);m.appendChild(c)}
+  if(hint){const p=document.createElement('p');p.className='note';p.style.margin='0 0 14px';p.textContent='💡 '+hint;m.prepend(p)}
+}
+load();
+</script>
+</body></html>
