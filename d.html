@@ -66,7 +66,8 @@ async function load(){
   let photoOk=false;try{const r=await fetch(pub('photo.jpg'),{method:'HEAD',cache:'no-store'});photoOk=r.ok}catch(e){}
   if(photoOk&&!shown){render({files:{photo:'photo.jpg'}},true);shown=true}
   if(!photoOk&&!shown)$('main').innerHTML=`<div class="card"><div class="wait"><div class="spin"></div>사진을 올리는 중이에요. 잠시만 기다려 주세요…</div></div>`;
-  if(++tries<40)setTimeout(load,8000);else if(!photoOk)$('main').innerHTML='<div class="err">아직 사진이 올라오지 않았어요.<br>잠시 후 이 페이지를 새로고침 해 주세요.</div>'}
+  if(++tries===12&&!photoOk)$('main').innerHTML='<div class="err">아직 사진이 올라오지 않았어요.<br>행사장에 인터넷이 없으면 <b>행사가 끝난 뒤에</b> 올라가요.<br>나중에 사진의 QR을 다시 찍거나 이 페이지를 다시 열어 주세요.</div>';
+  setTimeout(load,tries<40?8000:30000)}
 function render(man,partial){
   if(man.logo){const L=$('hLogo');L.onload=()=>L.hidden=false;L.src=pub(man.logo)}
   if(man.title)$('hTitle').textContent=man.title;if(man.date)$('hDate').textContent=man.date;document.title=(man.title||'인생네컷')+' 사진 받기';
