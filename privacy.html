@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>개인정보처리방침 · 인생네컷 부스</title>
+<link rel="icon" href="icon-192.png">
+<style>
+:root{--ink:#24202a;--mut:#6b6472;--line:#ece7ef;--accent:#d6336c;--bg:#fff}
+@media (prefers-color-scheme:dark){:root{--ink:#f1edf4;--mut:#aaa2b2;--line:#2c2731;--accent:#ff7aa2;--bg:#141118}}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.75 -apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Noto Sans KR",sans-serif}
+main{max-width:720px;margin:0 auto;padding:40px 20px 80px}
+h1{font-size:28px;line-height:1.3;margin:0 0 6px}
+.sub{color:var(--mut);margin:0 0 28px}
+h2{font-size:19px;margin:34px 0 8px;padding-top:18px;border-top:1px solid var(--line)}
+ul{padding-left:20px;margin:6px 0}li{margin:4px 0}
+table{border-collapse:collapse;width:100%;font-size:15px;margin:8px 0}
+th,td{border-bottom:1px solid var(--line);padding:8px 6px;text-align:left;vertical-align:top}
+th{white-space:nowrap;color:var(--mut);font-weight:600}
+b{color:var(--accent)}
+a{color:var(--accent)}
+footer{margin-top:40px;color:var(--mut);font-size:14px}
+</style>
+</head>
+<body>
+<main>
+<h1>개인정보처리방침</h1>
+<p class="sub">인생네컷 부스 (iPad 앱) · 시행일 2026년 11월 18일</p>
+
+<p>인생네컷 부스(이하 "앱")는 행사장에서 iPad로 네컷 사진을 찍고, 인쇄하거나 QR 코드로 받아 가는 사진 부스 앱입니다. 앱은 <b>회원가입이나 로그인이 없고</b>, 이름·전화번호 같은 개인정보를 입력받지 않습니다. 광고와 이용 분석(트래킹)도 사용하지 않습니다.</p>
+
+<h2>1. 처리하는 정보</h2>
+<table>
+<tr><th>항목</th><th>언제</th><th>어디에</th></tr>
+<tr><td>촬영한 사진(네컷 결과물·각 컷)</td><td>촬영할 때</td><td>촬영한 iPad 안 (인쇄 기록·다시 인쇄용)</td></tr>
+<tr><td>사진과 짧은 촬영 영상</td><td>QR 받기 기능이 켜져 있을 때만</td><td>사진 저장 서버(Supabase) — 24시간 뒤 자동 삭제</td></tr>
+<tr><td>행사 설정(로고·문구·프린터 주소 등)</td><td>관리자가 설정할 때</td><td>그 iPad 안에만</td></tr>
+</table>
+<p>얼굴이 담긴 사진은 개인을 알아볼 수 있는 정보가 될 수 있으므로, 아래와 같이 꼭 필요한 만큼만 처리합니다.</p>
+
+<h2>2. 이용 목적</h2>
+<ul>
+<li>네컷 사진을 만들고 포토프린터로 인쇄하기</li>
+<li>참여자가 QR 코드를 찍어 자기 휴대폰으로 사진·영상을 내려받게 하기</li>
+<li>행사 중 같은 사진을 다시 인쇄하기</li>
+</ul>
+<p>위 목적 외에는 사용하지 않으며, 다른 곳에 팔거나 제공하지 않습니다.</p>
+
+<h2>3. 보관 기간과 삭제</h2>
+<ul>
+<li><b>QR용으로 서버에 올린 사진·영상은 올린 뒤 24시간이 지나면 자동으로 삭제</b>됩니다. QR 링크도 그때부터 열리지 않습니다.</li>
+<li>iPad 안에 남는 사진은 행사 운영자가 관리자 화면에서 지울 수 있고, 앱을 지우면 함께 삭제됩니다.</li>
+<li>인터넷이 끊겼을 때 잠시 iPad에 보관했다가 연결되면 올리며, 올린 뒤에는 iPad의 대기 목록에서 지워집니다.</li>
+</ul>
+
+<h2>4. 앱이 사용하는 iPad 권한</h2>
+<ul>
+<li><b>카메라</b>: 사진 촬영에만 사용합니다. 촬영 화면 밖에서는 카메라를 쓰지 않습니다.</li>
+<li><b>로컬 네트워크</b>: 같은 Wi-Fi에 있는 포토프린터를 찾아 인쇄하는 데 사용합니다.</li>
+<li><b>사진첩</b>: 행사 로고·프레임 이미지를 고르거나, 이미지를 저장할 때만 사용합니다.</li>
+</ul>
+
+<h2>5. 처리 위탁(외부 서비스)</h2>
+<table>
+<tr><th>서비스</th><th>하는 일</th></tr>
+<tr><td>Supabase (Supabase Inc.)</td><td>QR로 받을 사진·영상 임시 저장 (24시간)</td></tr>
+<tr><td>GitHub Pages (GitHub, Inc.)</td><td>QR을 찍으면 열리는 사진 받기 페이지 제공, 24시간 지난 사진 자동 삭제 작업 실행</td></tr>
+</table>
+<p>이 서비스들의 서버는 해외에 있을 수 있습니다. 사진은 QR 링크를 아는 사람만 열 수 있는 주소로 저장되며, 목록으로 공개되지 않습니다.</p>
+
+<h2>6. 행사 운영자의 책임</h2>
+<p>이 앱을 설치해 행사를 여는 기관·단체(행사 운영자)는 참여자에게 사진 촬영과 QR 제공 사실을 알리고, 필요하면 동의를 받아야 합니다. 만 14세 미만 아동의 사진을 QR로 제공할 때는 보호자 동의를 받는 것을 권장합니다. QR 기능이 필요 없으면 관리자 화면에서 끄고 인쇄만 사용할 수 있습니다.</p>
+
+<h2>7. 참여자의 권리</h2>
+<p>참여자는 자기 사진의 삭제를 요청할 수 있습니다. 행사 현장에서는 행사 운영자에게, 그 밖에는 아래 문의 방법으로 요청하면 지체 없이 삭제합니다(서버 사진은 어차피 24시간 안에 자동 삭제됩니다).</p>
+
+<h2>8. 문의</h2>
+<p>개인정보 담당: 앱 개발자<br>문의 방법: iPad의 <b>TestFlight 앱 → 인생네컷 부스 → "베타 피드백 보내기"</b>로 남겨 주세요. 행사 현장에서는 행사 운영자에게 요청할 수 있습니다.</p>
+
+<h2>9. 변경</h2>
+<p>이 방침이 바뀌면 이 페이지에 시행일과 함께 알립니다.</p>
+
+<footer>인생네컷 부스 · <a href="app.html">앱 소개</a></footer>
+</main>
+</body>
+</html>
